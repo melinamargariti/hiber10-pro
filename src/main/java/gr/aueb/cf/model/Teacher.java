@@ -41,10 +41,20 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
-    public Set<Course> getCourses() {
+    public Set<Course> getAllCourses() {
         return Collections.unmodifiableSet(courses);
     }
 
+    // Helper Methods
+    public void addCourse(Course course) {
+        courses.add(course);
+        course.setTeacher(this);
+    }
+
+    public void removeCourse(Course course) {
+        courses.remove(course);
+        course.setTeacher(null);  // because the Course object still exists
+    }
 
 
     @Override
