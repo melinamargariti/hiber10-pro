@@ -1,8 +1,14 @@
 package gr.aueb.cf.model;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A java class mapped to a database using JPA.
@@ -16,7 +22,7 @@ public class Teacher {
 
     @Id  // id = the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // lets the database generate the ID using auto-increment.
-    private Long id;
+    private Long id;  // Long can be null
 
     @Column(name= "firstname", length = 255, nullable = false, unique = false)  // the default values aren't necessary
     private String firstname;
@@ -28,6 +34,18 @@ public class Teacher {
         this.firstname = firstname;
         this.lastname = lastname;
     }
+
+
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
+    private Set<Course> courses = new HashSet<>();
+
+    public Set<Course> getCourses() {
+        return Collections.unmodifiableSet(courses);
+    }
+
+
 
     @Override
     public String toString() {
