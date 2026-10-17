@@ -14,7 +14,7 @@ import java.util.Set;
  * A java class mapped to a database using JPA.
  */
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor  // @compile-time annotation that generates a no-args constructor for the class.
 @Getter
 @Setter
 @Table(name = "teachers")
