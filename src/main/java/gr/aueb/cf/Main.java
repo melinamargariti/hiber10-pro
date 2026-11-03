@@ -1,5 +1,6 @@
 package gr.aueb.cf;
 
+import gr.aueb.cf.model.Course;
 import gr.aueb.cf.model.Teacher;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,8 +17,15 @@ public class Main {
         try {
             tx.begin();
 
-            Teacher alice = new Teacher("Alice", "Johnson");
-            em.persist(alice);
+            Teacher alice = em.find(Teacher.class, 1L);
+            Course java = new Course("java");
+            alice.addCourse(java);
+            alice.setLastname("Wonderland");
+
+            em.persist(java);  // persist the new course
+
+//            Teacher alice = new Teacher("Alice", "Johnson");
+//            em.persist(alice);
 
             tx.commit();
         } catch (RuntimeException e) {
