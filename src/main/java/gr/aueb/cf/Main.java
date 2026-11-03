@@ -16,8 +16,15 @@ public class Main {
         try {
             tx.begin();
 
-
             // JPQL
+            String sql = "SELECT t FROM Teacher t"; // select all teachers
+            String sql2 = "SELECT t.lastname FROM Teacher t"; // select all teachers' lastnames
+            String sql3 = "SELECT t FROM Teacher t WHERE t.lastname = 'Alistair'"; // select teachers with lastname = 'AListair'- or :lastname with setParameter("lastname", "Alistair")
+            String sql4 = "SELECT c FROM Course c WHERE c.title LIKE 'Java%' AND c.teacher IS NOT NULL"; // select courses with title starting with 'Java' and have a teacher assigned
+            String sql5 = "SELECT t FROM Teacher t WHERE t.lastname IN :lastnames";
+            String sql6 = "SELECT t FROM Teacher t ORDER BY t.lastname ASC, t.firstname ASC";
+
+
 
             // Select all teachers
             String query = "SELECT t FROM Teacher t";
@@ -31,7 +38,7 @@ public class Main {
             courses.forEach(System.out::println);
 
             // Select courses of Kapeti
-            String query3 = "SELECT c FROM Course c WHERE c.teacher.lastname = 'Καπέτης'";
+            String query3 = "SELECT c FROM Course c WHERE c.teacher.lastname = 'Καπέτης'";  // implicit join
             List<Course> kapetiCourses = em.createQuery(query3, Course.class)
                     .getResultList();
             kapetiCourses.forEach(System.out::println);
@@ -42,6 +49,38 @@ public class Main {
                     .setParameter(1, "Καπέτης")
                     .getResultList();
             kapetiCourses2.forEach(System.out::println);
+
+            //Select teacher that teaches java
+            String query5 = "SELECT t FROM Teacher t JOIN t.courses c WHERE c.title = :title"; // explicit join
+            List<Teacher> javaTeachers = em.createQuery(query5, Teacher.class)
+                    .setParameter("title", "java")
+                    .getResultList();
+            javaTeachers.forEach(System.out::println);
+
+            // Select teacher lastname and the count of his courses
+            String query6 = "SELECT t.id, t.lastname, COUNT(c) FROM Teacher t JOIN t.courses c GROUP BY t.id";
+            List<Object[]> teachers6 = em.createQuery(query6, Object[].class).getResultList();
+
+            for (Object[] teacher : teachers6) {
+                Long id = (Long) teacher[0];
+                String lastname = (String) teacher[1];
+                Long count = (Long) teacher[2];
+                System.out.println(teacher[0] + " " + teacher[1] + " " + teacher[2]);
+            }
+
+            // Select teachers that do not teach any course
+            String query7 = "SELECT t FROM Teacher t LEFT JOIN t.courses c WHERE c.id IS NULL";
+            List<Teacher> teachers7 = em.createQuery(query7, Teacher.class).getResultList();
+            teachers7.forEach(System.out::println);
+
+            // Select teachers and their courses
+            // EAGER FETCH
+            String query8 = "SELECT t, c FROM Teacher t LEFT JOIN FETCH t.courses c";
+
+            // Native Query
+            String query9 = "SELECT * FROM teachers";
+            var teachers9 = em.createNativeQuery(query9, Teacher.class).getResultList();
+            teachers9.forEach(System.out::println);
 
             tx.commit();
 
