@@ -3,10 +3,7 @@ package gr.aueb.cf;
 import gr.aueb.cf.model.Course;
 import gr.aueb.cf.model.Teacher;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
 import java.util.List;
 
@@ -77,6 +74,31 @@ public class Main {
 //            cq.select(t).where(cb.like(t.get("lastname"),"Ανδρού%"));
 //            List<Teacher> teachers = em.createQuery(cq).setParameter("lastname", "Ανδρούτσος").getResultList();
 
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<Course> cq = cb.createQuery(Course.class);
+//            Root<Course> c = cq.from(Course.class);
+//            cq.select(c).where(cb.like(c.get("title"), "Java%"),
+//                    cb.isNotNull(c.get("teacher"))); // implicit AND
+
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<Course> cq = cb.createQuery(Course.class);
+//            Root<Course> c = cq.from(Course.class);
+//            cq.select(c).where(c.get("title").in(List.of("java", "python")));
+
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<Teacher> cq = cb.createQuery(Teacher.class);
+//            Root<Teacher> t = cq.from(Teacher.class);
+//            Join<Teacher, Course> courses = t.join("courses");
+//            cq.select(t).distinct(true).where(cb.equal(courses.get("title"), "Java"));
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Teacher> cq = cb.createQuery(Teacher.class);
+            Root<Teacher> t = cq.from(Teacher.class);
+            Join<Teacher, Course> courses = t.join("courses");
+//            cq.multiselect(t, cb.count(courses)).groupBy(t);
+            cq.multiselect(t, cb.count(courses)).groupBy(t).having(cb.gt(cb.count(courses),2L));
+
+
 
 
 
@@ -132,6 +154,8 @@ public class Main {
 //            // Select teachers and their courses
 //            // EAGER FETCH
 //            String query8 = "SELECT t, c FROM Teacher t LEFT JOIN FETCH t.courses c";
+//            List<Teacher> teachers8 = em.createQuery(query8, Teacher.class).getResultList();
+//            teachers8.forEach(t -> System.out.println(t + " " + t.getAllCourses);
 //
 //            // Native Query
 //            String query9 = "SELECT * FROM teachers";
